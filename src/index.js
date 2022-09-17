@@ -4,7 +4,7 @@ const route = require('./routes/route');
 const { default: mongoose } = require('mongoose');
 const app = express();
 app.use(bodyParser.json());
-mongoose.connect("mongodb+srv://wishall:vishal@atlascluster.p9u9uvd.mongodb.net/group59Database?retryWrites=true&w=majority")
+mongoose.connect("mongodb+srv://dipalidatit-project:1epbeEqP4NFreEba@cluster0.tzfsd9f.mongodb.net/dipali1?retryWrites=true&w=majority")
 .then( () => console.log("MongoDb is connected"))
 .catch ( err => console.log(err) )
 app.use('/', route);
