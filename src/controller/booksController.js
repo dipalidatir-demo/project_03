@@ -61,9 +61,9 @@ exports.createBook = async function (req, res) {
         if (!nRegex.test(subcategory)) {
             return res.status(400).send({ status: false, msg: "subcatgory contains invalid character" })
         }
-        subcategory = subcategory.map(element => {
-            return element.toLowerCase();
-        });
+        // subcategory = subcategory.map(element => {
+        //     return element.toLowerCase();
+        // });
 
         if (!isValid(releasedAt)) {
             return res.status(400).send({ status: false, msg: "releasedAt cannot be empty" })
@@ -71,7 +71,23 @@ exports.createBook = async function (req, res) {
         if (!dateMatch.test(releasedAt)) {
             return res.status(400).send({ status: false, msg: "releasedAt is in invalid format" })
         }
-        let bookCreated = await booksModel.create({ title, excerpt, userId, ISBN, category, subcategory, releasedAt })
+        if (req.files[0]) {
+            let files = req.files
+            // console.log(files, "hello", files.length);
+            if (files && files.length > 0) {
+                //upload to s3 and get the uploaded link
+                // res.send the link back to frontend/postman
+                var uploadedFileURL = await uploadFile(files[0])
+                //    console.log(uploadedFileURL);
+                //    return res.status(201).send({msg: "file uploaded succesfully", data: uploadedFileURL})
+            }
+            else {
+                return res.status(400).send({ msg: "No file found" })
+            }
+        }
+        data.bookCover = uploadedFileURL
+
+        let bookCreated = await booksModel.create({ title, excerpt, userId, ISBN, category, subcategory, releasedAt, data})
         if (moment(releasedAt) > moment()) return res.status(400).send({ status: false, msg: "releasedAt cannot be in future" })
         let noDate = moment().format(releasedAt, "YYYYMMDD")
         bookCreated = bookCreated.toObject()
